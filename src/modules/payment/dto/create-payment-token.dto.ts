@@ -45,7 +45,7 @@ class PurchaseDto {
 
 class SettingsDto {
   @IsString()
-  external_id: string; // ← KEY POINT: Order ID của anh
+  external_id: string;
 
   @IsString()
   @IsOptional()

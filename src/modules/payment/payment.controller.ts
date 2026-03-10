@@ -1,4 +1,12 @@
-import { Controller, Post, Body, ValidationPipe, Get, Render, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ValidationPipe,
+  Get,
+  Render,
+  Inject,
+} from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { PaymentService } from './payment.service';
 import { CreatePaymentTokenDto } from './dto/create-payment-token.dto';
@@ -22,7 +30,6 @@ export class PaymentController {
     return {
       projectId: this.config.projectId,
       loginId: this.config.loginId,
-      // Don't expose API key and secret in production
       ...(process.env.NODE_ENV === 'development' && {
         apiKey: this.config.apiKey,
       }),
