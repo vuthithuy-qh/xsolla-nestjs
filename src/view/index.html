@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xsolla Payment Demo - NestJS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        fieldset {
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        legend {
+            font-weight: bold;
+            color: #4CAF50;
+            padding: 0 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            font-family: monospace;
+            min-height: 300px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .error {
+            border-left-color: #f44336;
+            background-color: #ffebee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Xsolla Payment Demo - NestJS</h1>
+        
+        <fieldset>
+            <legend>Server-Side Payment Token Creation</legend>
+            
+            <label>
+                Project ID:
+                <input id="project" type="text" value="">
+            </label>
+            
+            <label>
+                API Key:
+                <input id="api-key" type="text" value="">
+            </label>
+            
+            <label>
+                JSON Body:
+                <textarea id="body">{
+  "sandbox": true,
+  "user": {
+    "id": {
+      "value": "user-123"
+    },
+    "country": {
+      "value": "US"
+    }
+  },
+  "purchase": {
+    "items": [
+      {
+        "sku": "mysku01",
+        "quantity": 1
+      }
+    ]
+  }
+}</textarea>
+            </label>
+            
+            <a href="https://developers.xsolla.com/api/igs-bb/operation/admin-create-payment-token/" target="_blank">📚 API Documentation</a>
+            <br><br>
+            
+            <button onclick="getToken()">🚀 Create Payment Token</button>
+            
+            <div id="result"></div>
+        </fieldset>
+
+        <div style="margin-top: 30px; padding: 15px; background-color: #e3f2fd; border-radius: 4px;">
+            <h3>📖 Instructions:</h3>
+            <ol>
+                <li>Fill in your Xsolla Project ID and API Key</li>
+                <li>Modify the JSON body (user ID, SKU, etc.)</li>
+                <li>Click "Create Payment Token"</li>
+                <li>Open the generated PayStation URL to make a test payment</li>
+                <li>Check your server console for webhook notifications</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Load configuration on page load
+        window.onload = async function() {
+            try {
+                const response = await fetch('http://localhost:8080/payment/config');
+                const config = await response.json();
+                
+                if (config.projectId) {
+                    document.getElementById('project').value = config.projectId;
+                }
+                if (config.apiKey) {
+                    document.getElementById('api-key').value = config.apiKey;
+                }
+            } catch (error) {
+                console.error('Failed to load config:', error);
+            }
+        };
+
+        async function getToken() {
+            const project = document.getElementById('project').value;
+            const apiKey = document.getElementById('api-key').value;
+            const bodyText = document.getElementById('body').value;
+
+            let bodyObj;
+            try {
+                bodyObj = JSON.parse(bodyText);
+            } catch (e) {
+                alert('Invalid JSON in body');
+                return;
+            }
+
+            const result = document.getElementById('result');
+            result.innerHTML = '⏳ Loading...';
+            result.className = '';
+
+            try {
+                const response = await fetch('http://localhost:8080/payment/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: bodyText
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.token) {
+                    result.innerHTML = `✅ Success!\n\n${JSON.stringify(data, null, 2)}\n\n🔗 Payment URL:\n${data.paystationUrl}`;
+                    result.innerHTML += `\n\n<a href="${data.paystationUrl}" target="_blank" style="font-size: 18px; font-weight: bold;">🎮 Open PayStation →</a>`;
+                } else {
+                    result.className = 'error';
+                    result.innerHTML = `❌ Error:\n\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                result.className = 'error';
+                result.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
