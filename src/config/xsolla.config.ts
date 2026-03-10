@@ -3,8 +3,8 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('xsolla', () => ({
   projectId: process.env.XSOLLA_PROJECT_ID,
   apiKey: process.env.XSOLLA_API_KEY,
-  projectKey: process.env.XSOLLA_PROJECT_KEY, // ← Thêm dòng này
-  merchantId: process.env.XSOLLA_MERCHANT_ID, // ← Có thể cần
+  projectKey: process.env.XSOLLA_PROJECT_KEY,
+  merchantId: process.env.XSOLLA_MERCHANT_ID,
   loginId: process.env.XSOLLA_LOGIN_ID,
   apiUrl: process.env.XSOLLA_API_URL || 'https://store.xsolla.com/api/v3',
   sandboxPaystationUrl:

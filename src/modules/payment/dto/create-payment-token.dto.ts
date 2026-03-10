@@ -1,4 +1,10 @@
-import { IsBoolean, IsString, IsArray, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsString,
+  IsArray,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 class UserIdDto {
@@ -37,6 +43,15 @@ class PurchaseDto {
   items: PurchaseItemDto[];
 }
 
+class SettingsDto {
+  @IsString()
+  external_id: string; // ← KEY POINT: Order ID của anh
+
+  @IsString()
+  @IsOptional()
+  return_url?: string;
+}
+
 export class CreatePaymentTokenDto {
   @IsBoolean()
   sandbox: boolean;
@@ -48,4 +63,9 @@ export class CreatePaymentTokenDto {
   @ValidateNested()
   @Type(() => PurchaseDto)
   purchase: PurchaseDto;
+
+  @ValidateNested()
+  @Type(() => SettingsDto)
+  @IsOptional()
+  settings?: SettingsDto;
 }

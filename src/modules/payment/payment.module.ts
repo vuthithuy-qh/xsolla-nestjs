@@ -3,6 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
+import { OrderService } from './order.service';
 import xsollaConfig from '../../config/xsolla.config';
 
 @Module({
@@ -11,7 +12,7 @@ import xsollaConfig from '../../config/xsolla.config';
     ConfigModule.forFeature(xsollaConfig),
   ],
   controllers: [PaymentController],
-  providers: [PaymentService],
-  exports: [PaymentService],
+  providers: [PaymentService, OrderService],
+  exports: [PaymentService, OrderService],
 })
 export class PaymentModule {}

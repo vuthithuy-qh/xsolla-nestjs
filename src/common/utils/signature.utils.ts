@@ -15,10 +15,9 @@ export class SignatureUtil {
     // Remove "Signature " prefix if exists
     const cleanSignature = signature.replace('Signature ', '');
 
-    // ⚠️ QUAN TRỌNG: Xsolla dùng SHA-1 (KHÔNG phải HMAC!)
     // Công thức: sha1(json_body + project_key)
     const expectedSignature = crypto
-      .createHash('sha1') // ← Đổi từ createHmac thành createHash
+      .createHash('sha1')
       .update(requestBody + projectKey) // ← Concat trực tiếp
       .digest('hex');
 

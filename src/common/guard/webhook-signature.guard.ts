@@ -36,7 +36,7 @@ export class WebhookSignatureGuard implements CanActivate {
       throw new UnauthorizedException('Missing raw body');
     }
 
-    //  Dùng projectKey, không phải webhookSecretKey
+    //  Dùng projectKey,
     const isValid = SignatureUtil.verifySignature(
       signature,
       rawBody,

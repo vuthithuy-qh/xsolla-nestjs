@@ -15,8 +15,7 @@ export class WebhookController {
   constructor(private readonly webhookService: WebhookService) {}
 
   @Post()
-  @HttpCode(HttpStatus.NO_CONTENT) // ← Đổi từ OK thành NO_CONTENT
-  @UseGuards(WebhookSignatureGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async handleWebhook(@Body() notification: WebhookNotification) {
     await this.webhookService.handleWebhook(notification);
     // Không return gì cả (204 không có body)
